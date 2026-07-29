@@ -11,8 +11,7 @@ completion_rate = 0.0
 
 # --- WELCOME SECTION ---
 print("Welcome to Task Tracker!")
-print("Please enter your task details below.")
-print()
+print("Please enter your task details below.\n")
 
 # --- COLLECT INPUT ---
 # 1. Task name (String)
@@ -26,9 +25,7 @@ time_input = input("Estimated time to complete (in minutes): ")
 task_time = int(time_input)
 
 # 4. Urgency (String)
-task_urgent = input("Is this task urgent? (yes/no): ")
-
-print()
+task_urgent = input("Is this task urgent? (yes/no): \n")
 
 # --- DISPLAY SUMMARY ---
 print("--- Task Summary ---")
