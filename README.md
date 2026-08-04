@@ -10,3 +10,7 @@ Task Tracker is a Python-based command-line application. By the end of this cour
 - **task_tracker.py**: Refactored version using functions, scope, and docstrings.
 - **task_manager.py**: Main task manager utilizing global lists and dictionaries.
 - **data_model.md**: Documentation mapping system requirements to the data structure.
+
+## Week 2 Progress
+
+Adding file persistence solved the issue of data loss, allowing the Task Manager to store tasks in a JSON file between sessions so they aren't wiped when the program terminates. If the `FileNotFoundError` wasn't caught when loading tasks, the entire program would crash the very first time a user tried to run it before saving any data. This error handling directly connects to the QA mindset from Week 1 because it anticipates how users (or the environment) might break the system and builds defensive fail-safes to keep the application stable.
