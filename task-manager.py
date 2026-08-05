@@ -1,27 +1,27 @@
-# Program: Task Manager (OOP Refactored)
+# Program: Task Manager (Polymorphism Update)
 # Author: Jaden Horky
-# Description: A console-based task manager using Task objects and JSON persistence.
+# Description: A console-based task manager using OOP, polymorphism, and JSON persistence.
 
 import json
-from task import Task
+from task import Task, UrgentTask, RecurringTask, task_from_dict
 
 TASKS_FILE = "tasks.json"
 tasks = []
 
 
 def save_tasks():
-    """Saves the current global tasks list to a JSON file by converting objects to dicts."""
+    """Saves the current global tasks list to a JSON file."""
     with open(TASKS_FILE, 'w') as file:
         json.dump([task.to_dict() for task in tasks], file, indent=4)
     print("Tasks saved.")
 
 
 def load_tasks():
-    """Loads tasks from a JSON file and instantiates them as Task objects."""
+    """Loads tasks from JSON, using the factory function to build the correct subclass."""
     global tasks
     try:
         with open(TASKS_FILE, 'r') as file:
-            tasks = [Task.from_dict(t) for t in json.load(file)]
+            tasks = [task_from_dict(t) for t in json.load(file)]
             print(f"Loaded {len(tasks)} task(s).")
     except FileNotFoundError:
         tasks = []
@@ -32,10 +32,37 @@ def load_tasks():
 
 
 def add_task(name, priority, estimated_time):
-    """Creates a Task object and appends it to the global tasks list."""
+    """Creates a basic Task object and appends it to the global tasks list."""
     new_task = Task(name, priority, estimated_time)
     tasks.append(new_task)
     print(f"Task added: {new_task.name}")
+
+
+def add_urgent_task():
+    """Collects details, creates an UrgentTask, and appends it to the list."""
+    name = input("Task name: ")
+    try:
+        estimated_time = int(input("Estimated time in minutes: "))
+        deadline = input("Deadline (e.g. 2024-12-01): ")
+        new_task = UrgentTask(name, estimated_time, deadline)
+        tasks.append(new_task)
+        print(f"Urgent task added: {new_task.name}")
+    except ValueError:
+        print("Error: Please enter a whole number for estimated time.")
+
+
+def add_recurring_task():
+    """Collects details, creates a RecurringTask, and appends it to the list."""
+    name = input("Task name: ")
+    priority = input("Priority (high, medium, low): ")
+    try:
+        estimated_time = int(input("Estimated time in minutes: "))
+        frequency = input("Frequency (e.g. daily, weekly): ")
+        new_task = RecurringTask(name, priority, estimated_time, frequency)
+        tasks.append(new_task)
+        print(f"Recurring task added: {new_task.name}")
+    except ValueError:
+        print("Error: Please enter a whole number for estimated time.")
 
 
 def view_tasks():
@@ -72,7 +99,7 @@ def run_manager():
     print("Welcome to the Task Manager!")
     
     while True:
-        print("\nOptions: add | view | complete | delete | save | quit")
+        print("\nOptions: add | add-urgent | add-recurring | view | complete | delete | save | quit")
         choice = input("Choose an option: ").strip().lower()
         
         if choice == "add":
@@ -83,7 +110,12 @@ def run_manager():
                 add_task(name, priority, estimated_time)
             except ValueError:
                 print("Error: Please enter a whole number for estimated time.")
-                continue
+                
+        elif choice == "add-urgent":
+            add_urgent_task()
+            
+        elif choice == "add-recurring":
+            add_recurring_task()
                 
         elif choice == "view":
             view_tasks()
@@ -96,7 +128,6 @@ def run_manager():
                     complete_task(task_num - 1)
                 except ValueError:
                     print("Error: Please enter a valid number.")
-                    continue
                     
         elif choice == "delete":
             view_tasks()
@@ -106,7 +137,6 @@ def run_manager():
                     delete_task(task_num - 1)
                 except ValueError:
                     print("Error: Please enter a valid number.")
-                    continue
         
         elif choice == "save":
             save_tasks()
@@ -117,6 +147,7 @@ def run_manager():
             break
             
         else:
-            print("Unrecognized option. Please choose add, view, complete, delete, save, or quit.")
+            print("Unrecognized option. Please choose a valid command from the list.")
 
-run_manager()
+if __name__ == "__main__":
+    run_manager()
