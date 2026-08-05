@@ -1,27 +1,27 @@
-# Program: Task Manager Foundation
+# Program: Task Manager (OOP Refactored)
 # Author: Jaden Horky
-# Description: A console-based task manager using global lists, dictionaries, and JSON file persistence.
+# Description: A console-based task manager using Task objects and JSON persistence.
 
 import json
+from task import Task
 
 TASKS_FILE = "tasks.json"
-
 tasks = []
 
 
 def save_tasks():
-    """Saves the current global tasks list to a JSON file."""
+    """Saves the current global tasks list to a JSON file by converting objects to dicts."""
     with open(TASKS_FILE, 'w') as file:
-        json.dump(tasks, file, indent=4)
+        json.dump([task.to_dict() for task in tasks], file, indent=4)
     print("Tasks saved.")
 
 
 def load_tasks():
-    """Loads tasks from a JSON file into the global tasks list."""
+    """Loads tasks from a JSON file and instantiates them as Task objects."""
     global tasks
     try:
         with open(TASKS_FILE, 'r') as file:
-            tasks = json.load(file)
+            tasks = [Task.from_dict(t) for t in json.load(file)]
             print(f"Loaded {len(tasks)} task(s).")
     except FileNotFoundError:
         tasks = []
@@ -32,22 +32,10 @@ def load_tasks():
 
 
 def add_task(name, priority, estimated_time):
-    """
-    Creates a task dictionary and appends it to the global tasks list.
-    
-    Args:
-        name (str): The name of the task.
-        priority (str): The priority level (high, medium, low).
-        estimated_time (int): The estimated time in minutes.
-    """
-    new_task = {
-        "name": name,
-        "priority": priority,
-        "is_complete": False,
-        "estimated_time": estimated_time
-    }
+    """Creates a Task object and appends it to the global tasks list."""
+    new_task = Task(name, priority, estimated_time)
     tasks.append(new_task)
-    print(f"Task added: {name}")
+    print(f"Task added: {new_task.name}")
 
 
 def view_tasks():
@@ -57,41 +45,29 @@ def view_tasks():
         return
     
     for i, task in enumerate(tasks):
-        status = "Complete" if task["is_complete"] else "Pending"
-        print(f"{i + 1}. {task['name']} | Priority: {task['priority']} | Status: {status} | Est. Time: {task['estimated_time']} mins")
+        print(f"{i + 1}. {task}")
 
 
 def complete_task(index):
-    """
-    Marks a task as complete based on its index.
-    
-    Args:
-        index (int): The zero-based index of the task to complete.
-    """
+    """Marks a task as complete based on its index."""
     if 0 <= index < len(tasks):
-        tasks[index]["is_complete"] = True
-        print(f"Task marked complete: {tasks[index]['name']}")
+        tasks[index].mark_complete()
+        print(f"Task marked complete: {tasks[index].name}")
     else:
         print("Error: Invalid task number.")
 
 
 def delete_task(index):
-    """
-    Removes a task from the list based on its index.
-    
-    Args:
-        index (int): The zero-based index of the task to delete.
-    """
+    """Removes a task from the list based on its index."""
     if 0 <= index < len(tasks):
-        removed_task = tasks.pop(index)
-        print(f"Task deleted: {removed_task['name']}")
+        removed = tasks.pop(index)
+        print(f"Task deleted: {removed.name}")
     else:
         print("Error: Invalid task number.")
 
 
 def run_manager():
     """Main loop that provides the menu options and orchestrates the program."""
-    
     load_tasks()
     print("Welcome to the Task Manager!")
     

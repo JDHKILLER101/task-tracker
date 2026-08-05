@@ -23,3 +23,7 @@
 *   **In-Memory Storage:** The data model currently assumes tasks only need to exist while the script is running. Because no file I/O operations are present, all tasks are wiped when the program terminates.
 *   **Integer Time:** The model assumes the user will always enter a whole number for the estimated time, handled by an integer conversion.
 *   **Case Sensitivity:** The model assumes the program handles case transformations, treating "High" and "high" as the same priority level.
+
+## Week 2 Day 3 Update: OOP Refactor
+
+By transitioning from a simple dictionary to a formal `Task` class, the application now pairs the raw data with the behavior (methods) that governs it. Encapsulation adds a layer of protection that dictionaries lack; by making `__priority` and `__is_complete` private, other parts of the program cannot accidentally assign invalid data to them (e.g., setting priority to "super high"), forcing updates to go through controlled methods like `set_priority()`. Finally, the `to_dict()` and `from_dict()` methods are necessary because Python's built-in `json` module only understands primitive data types and dictionaries; it cannot natively read or write custom Python objects directly to a text file.
